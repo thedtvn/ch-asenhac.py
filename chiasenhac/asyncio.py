@@ -4,21 +4,11 @@ from .sync import ChiaSeNhac
 from .obj import *
 
 
-
 class Song(Song):
     async def list_audio(self):
-        data = re.compile(r'<a class="download_item" href="(.*?)" title=".*?">').findall(self.page)
-        data2 = re.compile(r'{"file": "(.*?)", "label": .*?, "type": .*?, "default": .*?}').findall(self.page)
-        data.extend(data2)
-        return await AudioQueue(list(set(data))).start()
+        return await AudioQueue(list(set(self.raw_url_list))).start()
 
 class AudioItem(AudioItem):
-    def __init__(self,  url):
-        prh = [i for i in urllib.parse.urlparse(url).path.split("/") if i]
-        self.url = url
-        self.quality = int(prh[-2])
-        self.format = prh[-1].split(".")[-1]
-
     async def start(self):
         try:
             async with aiohttp.ClientSession() as s:
@@ -36,9 +26,6 @@ class AudioQueue(AudioQueue):
         super().extend(self.data)
         return self
 
-    def __init__(self, input):
-        self.input = input
-
     async def best_quality(self):
         best_quality = None
         for i in self.data:
@@ -54,7 +41,7 @@ class AudioQueue(AudioQueue):
             raise CSNError("Could not find best quality")
 
 
-class ChiaSeNhacAsync(ChiaSeNhac):
+class ChiaSeNhac(ChiaSeNhac):
 
     async def get_songinfo(self, url):
         if self.check_links(url):

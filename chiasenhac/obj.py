@@ -17,20 +17,22 @@ class Song(object):
         self.thumbnail = re.compile(r'<meta property="og:image" content="(.*?)" />').findall(self.page)[0]
         self.title = self.titleraw.split(" - ")[0]
         self.artist = self.titleraw.split(" - ")[1]
-
-    def list_audio(self):
         data = re.compile(r'<a class="download_item" href="(.*?)" title=".*?">').findall(self.page)
         data2 = re.compile(r'{"file": "(.*?)", "label": .*?, "type": .*?, "default": .*?}').findall(self.page)
         data.extend(data2)
-        return AudioQueue(list(set(data))).start()
+        self.raw_url_list = data
+        if not self.raw_url_list:
+            raise CSNError("Audio not found")
+
+    def list_audio(self):
+        return AudioQueue(list(set(self.raw_url_list))).start()
 
 class AudioQueue(list):
     def checkaudio(self, url):
         return AudioItem(url).start()
 
     def start(self):
-        with ThreadPool() as th:
-            self.data = th.map(self.checkaudio, self.input)
+        self.data = [self.checkaudio(i) for i in self.input]
         super().extend(self.data)
         return self
 
