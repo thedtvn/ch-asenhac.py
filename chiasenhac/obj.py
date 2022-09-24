@@ -22,16 +22,20 @@ class Song(object):
         data = re.compile(r'<a class="download_item" href="(.*?)" title=".*?">').findall(self.page)
         data2 = re.compile(r'{"file": "(.*?)", "label": .*?, "type": .*?, "default": .*?}').findall(self.page)
         data.extend(data2)
-        return AudioQueue(list(set(data)))
+        return AudioQueue(list(set(data))).start()
 
 class AudioQueue(list):
     def checkaudio(self, url):
         return AudioItem(url).start()
 
-    def __init__(self, input):
+    def start(self):
         with ThreadPool() as th:
-            self.data = th.map(self.checkaudio, input)
+            self.data = th.map(self.checkaudio, self.input)
         super().extend(self.data)
+        return self
+
+    def __init__(self, input):
+        self.input = input
 
     def best_quality(self):
         best_quality = None
