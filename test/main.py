@@ -5,6 +5,7 @@ import time
 async def main():
     cl = chiasenhac.ChiaSeNhac()
     a = await cl.get_songinfo("http://old.chiasenhac.vn/nghe-album/mud~djgm-hatsune-miku~tsv6ms7qqk84te.html")
+    print(type(a))
     print(a.titleraw)
     print(a.url)
     print(a.title)

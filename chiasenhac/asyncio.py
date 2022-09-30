@@ -1,8 +1,8 @@
 import aiohttp
 import asyncio
+import time
 from .sync import ChiaSeNhac
 from .obj import *
-
 
 class Song(Song):
     async def list_audio(self):
@@ -44,9 +44,27 @@ class AudioQueue(AudioQueue):
 
 class ChiaSeNhac(ChiaSeNhac):
 
+    async def login(self, s):
+        print(self.last_cookies_modified + 864000 < int(time.time()))
+        if self.email and self.password:
+            if self.last_cookies_modified + 864000 < int(time.time()):
+                async with s.get("https://chiasenhac.vn/login") as r:
+                    csrf_token = re.findall(r'<meta name="csrf-token" content="(.*?)" />', await r.text())
+                data = {"_token": csrf_token, "email": self.email, "password": self.password}
+                async with s.post("https://chiasenhac.vn/login", data=data) as r:
+                    if r.url.path == "/":
+                        s._cookie_jar.update_cookies(r.cookies)
+                        self.cookies = r.cookies
+                        self.last_cookies_modified = int(time.time())
+                    else:
+                        raise CSNError("Login failed")
+            else:
+                s._cookie_jar.update_cookies(self.cookies)
+
     async def get_songinfo(self, url):
         if self.check_links(url):
             async with aiohttp.ClientSession() as s:
+                await self.login(s)
                 async with s.get(url) as r:
                     data = await r.text()
             if '<h4 class="text-danger">' not in data:

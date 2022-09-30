@@ -59,7 +59,7 @@ class AudioItem(object):
     def __init__(self,  url):
         prh = [i for i in urllib.parse.urlparse(url).path.split("/") if i]
         self.url = url
-        self.quality = int(prh[-2])
+        self.quality = int(prh[-2]) if prh[-2].isdigit() else 9999999
         self.format = prh[-1].split(".")[-1]
 
     def start(self):
