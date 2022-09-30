@@ -61,11 +61,14 @@ class AudioItem(object):
         self.url = url
         self.quality = int(prh[-2]) if prh[-2].isdigit() else 9999999
         self.format = prh[-1].split(".")[-1]
+        self.bytes = None
 
     def start(self):
         try:
             r = requests.get(self.url, timeout=0.5)
             self.is_available = bool(r.status_code == 200)
+            if self.is_available:
+                self.bytes = r.content
         except:
             self.is_available = False
         return self

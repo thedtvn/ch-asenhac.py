@@ -16,6 +16,8 @@ class AudioItem(AudioItem):
                     self.is_available = bool(r.status == 200)
         except:
             self.is_available = False
+            if self.is_available:
+                self.bytes =  await r.content.read()
         return self
 
 class AudioQueue(AudioQueue):
