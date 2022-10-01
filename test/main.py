@@ -17,7 +17,7 @@ async def main():
         print(i.quality)
         print(i.format)
         print(i.is_available)
-    print(await queue.best_quality())
+    print((await queue.best_quality()))
 
 start = time.time()
 asyncio.run(main())

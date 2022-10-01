@@ -12,12 +12,11 @@ class AudioItem(AudioItem):
     async def start(self):
         try:
             async with aiohttp.ClientSession() as s:
-                async with s.get(self.url, timeout=0.5) as r:
+                async with s.get(self.url, timeout=1) as r:
+                    self.bytes = await r.content.read()
                     self.is_available = bool(r.status == 200)
         except:
             self.is_available = False
-            if self.is_available:
-                self.bytes =  await r.content.read()
         return self
 
 class AudioQueue(AudioQueue):
@@ -47,7 +46,6 @@ class AudioQueue(AudioQueue):
 class ChiaSeNhac(ChiaSeNhac):
 
     async def login(self, s):
-        print(self.last_cookies_modified + 864000 < int(time.time()))
         if self.email and self.password:
             if self.last_cookies_modified + 864000 < int(time.time()):
                 async with s.get("https://chiasenhac.vn/login") as r:
