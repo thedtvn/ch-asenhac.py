@@ -12,7 +12,7 @@ class AudioItem(AudioItem):
     async def start(self):
         try:
             async with aiohttp.ClientSession() as s:
-                async with s.get(self.url, timeout=1) as r:
+                async with s.get(self.url, timeout=5) as r:
                     self.bytes = await r.content.read()
                     self.is_available = bool(r.status == 200)
         except:

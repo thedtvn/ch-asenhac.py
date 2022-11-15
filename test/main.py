@@ -4,7 +4,7 @@ import time
 
 async def main():
     cl = chiasenhac.ChiaSeNhac()
-    a = await cl.get_songinfo("http://old.chiasenhac.vn/nghe-album/mud~djgm-hatsune-miku~tsv6ms7qqk84te.html")
+    a = await cl.get_songinfo("https://chiasenhac.vn/mp3/mono-onionn/waiting-for-you-tsv66t5dqkkfhm.html")
     print(type(a))
     print(a.titleraw)
     print(a.url)
